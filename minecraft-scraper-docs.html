@@ -1,0 +1,446 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Minecraft Shorts Scraper - n8n Workflow Documentation</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #050505;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: rgba(0,255,65,0.2);
+    --border2: rgba(0,255,65,0.4);
+    --text: #e0e0e0;
+    --muted: #888888;
+    --accent: #00ff41;
+    --accent-dim: rgba(79,142,247,0.12);
+    --green: #3ecf8e;
+    --green-dim: rgba(62,207,142,0.12);
+    --amber: #f5a623;
+    --amber-dim: rgba(245,166,35,0.12);
+    --red: #f06565;
+    --red-dim: rgba(240,101,101,0.12);
+    --purple: #a78bfa;
+    --purple-dim: rgba(167,139,250,0.12);
+    --teal: #2dd4bf;
+    --teal-dim: rgba(45,212,191,0.12);
+    --grass: #5cb85c;
+    --grass-dim: rgba(92,184,92,0.12);
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 0 0 80px;
+  }
+
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 32px 36px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); text-decoration: none; margin-bottom: 24px; }
+  .back-link:hover { color: var(--accent); }
+  .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .badge { font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 99px; border: 1px solid; }
+  .badge-blue   { background: var(--accent-dim);  color: var(--accent);  border-color: rgba(79,142,247,0.3); }
+  .badge-green  { background: var(--green-dim);   color: var(--green);   border-color: rgba(62,207,142,0.3); }
+  .badge-amber  { background: var(--amber-dim);   color: var(--amber);   border-color: rgba(245,166,35,0.3); }
+  .badge-purple { background: var(--purple-dim);  color: var(--purple);  border-color: rgba(167,139,250,0.3); }
+  .badge-grass  { background: var(--grass-dim);   color: var(--grass);   border-color: rgba(92,184,92,0.3); }
+  .badge-red    { background: var(--red-dim);     color: var(--red);     border-color: rgba(240,101,101,0.3); }
+
+  h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; }
+  .subtitle { color: var(--muted); font-size: 15px; max-width: 580px; }
+
+  .meta-row { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border); }
+  .meta-item label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); display: block; margin-bottom: 3px; }
+  .meta-item span  { font-size: 14px; font-weight: 500; }
+
+  .content { max-width: 860px; margin: 0 auto; padding: 0 32px; }
+  .section { padding: 40px 0 0; }
+  .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  h2 { font-size: 20px; font-weight: 600; margin-bottom: 12px; }
+  p  { color: #b0b5c8; margin-bottom: 14px; }
+  p:last-child { margin-bottom: 0; }
+
+  /* Stats */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 4px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 16px; }
+  .stat-card .val { font-size: 26px; font-weight: 700; color: var(--accent); }
+  .stat-card .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* Callout */
+  .callout { border-radius: var(--radius); padding: 18px 20px; margin-top: 4px; display: flex; gap: 14px; align-items: flex-start; }
+  .callout-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+  .callout-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .callout-desc { font-size: 13px; line-height: 1.5; }
+
+  /* Step flow */
+  .flow { display: flex; flex-direction: column; margin-top: 4px; }
+  .step { display: flex; gap: 16px; }
+  .step-line { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 36px; }
+  .step-dot { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; z-index: 1; }
+  .step-connector { width: 1px; flex: 1; min-height: 20px; background: var(--border2); margin: 4px 0; }
+  .step:last-child .step-connector { display: none; }
+  .step-body { padding-bottom: 28px; flex: 1; }
+  .step-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; padding-top: 6px; }
+  .step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .step-tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 99px; margin-top: 8px; margin-right: 4px; }
+
+  /* Viral filter spotlight */
+  .filter-box {
+    background: var(--surface);
+    border: 1px solid rgba(245,166,35,0.3);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    margin-top: 4px;
+  }
+  .filter-box h3 { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: var(--amber); }
+  .filter-rule {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+  }
+  .filter-rule:last-child { border-bottom: none; padding-bottom: 0; }
+  .filter-rule .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .filter-rule .rule-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+  .filter-rule .rule-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .formula { font-family: 'Fira Mono', monospace; background: var(--surface2); padding: 2px 8px; border-radius: 4px; font-size: 12px; color: var(--amber); }
+
+  /* AI prompt constraints */
+  .constraints { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px; }
+  .constraint-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+  .constraint-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 600; margin-bottom: 8px; }
+  .constraint-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .constraint-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* Output fields */
+  .output-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 4px; }
+  .output-field { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; }
+  .output-field .field-name { font-weight: 600; color: var(--green); margin-bottom: 3px; font-size: 12px; }
+  .output-field .field-desc { color: var(--muted); font-size: 12px; }
+
+  /* Code block */
+  .code-block { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; font-family: 'Fira Mono', 'Courier New', monospace; font-size: 12.5px; line-height: 1.7; color: #c8cfe8; overflow-x: auto; margin-top: 4px; }
+  .code-block .c { color: var(--muted); font-style: italic; }
+  .code-block .k { color: var(--purple); }
+  .code-block .s { color: var(--green); }
+  .code-block .n { color: var(--amber); }
+
+  /* Script output structure */
+  .script-parts { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+  .script-part { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
+  .script-part-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .script-part-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .script-part-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* Tech stack */
+  .stack-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+  .stack-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+  .stack-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+  .stack-name { font-weight: 600; display: block; }
+  .stack-role { font-size: 11px; color: var(--muted); display: block; }
+
+  /* Error handling tiers */
+  .tiers { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+  .tier { display: flex; gap: 12px; align-items: flex-start; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; }
+  .tier-num { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; flex-shrink: 0; margin-top: 1px; }
+  .tier-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+  .tier-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  .doc-footer { margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+
+  @media (max-width: 600px) {
+    .header, .content { padding-left: 16px; padding-right: 16px; }
+    h1 { font-size: 22px; }
+    .constraints { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="index.html" class="back-link">← Back to portfolio</a>
+  <div class="badge-row">
+    <span class="badge badge-grass">n8n Automation</span>
+    <span class="badge badge-purple">AI-Powered</span>
+    <span class="badge badge-red">YouTube API</span>
+    <span class="badge badge-green">Viral Detection</span>
+    <span class="badge badge-blue">Content Strategy</span>
+  </div>
+  <h1>Minecraft Shorts Scraper</h1>
+  <p class="subtitle">A YouTube research tool that scrapes the most viral Minecraft Shorts from the past 7 days, filters for small channels that beat the algorithm, and uses AI to explain why the video blew up - then writes a solo-filmable script for it.</p>
+  <div class="meta-row">
+    <div class="meta-item"><label>Platform</label><span>n8n</span></div>
+    <div class="meta-item"><label>Trigger</label><span>Manual (on demand)</span></div>
+    <div class="meta-item"><label>Data sources</label><span>YouTube Data API v3</span></div>
+    <div class="meta-item"><label>AI models</label><span>Claude + Gemini</span></div>
+    <div class="meta-item"><label>Output</label><span>Google Sheets</span></div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- Origin story -->
+  <div class="section">
+    <div class="section-label">The backstory</div>
+    <h2>Built by a Minecraft creator, for Minecraft creators</h2>
+    <p>This workflow was built while actively running a Minecraft Shorts channel. The problem: finding content inspiration was a daily manual grind - searching YouTube, comparing view counts, trying to reverse-engineer why certain videos exploded. This tool automates that entire research process.</p>
+
+    <div class="callout" style="background: var(--grass-dim); border: 1px solid rgba(92,184,92,0.25); margin-top: 16px;">
+      <div class="callout-icon">🎮</div>
+      <div>
+        <div class="callout-title" style="color: var(--grass);">Creator-first design</div>
+        <div class="callout-desc" style="color: #a8d8a8;">The AI prompt is specifically constrained to solo creator production - no scripts requiring other players, only Mobs, Armor Stands, and Mods. This reflects real-world content creation constraints and makes the output actually usable.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="section">
+    <div class="section-label">Overview</div>
+    <div class="stats">
+      <div class="stat-card"><div class="val">500</div><div class="lbl">Max videos searched</div></div>
+      <div class="stat-card"><div class="val">7</div><div class="lbl">Days lookback window</div></div>
+      <div class="stat-card"><div class="val">3</div><div class="lbl">YouTube API calls per video</div></div>
+      <div class="stat-card"><div class="val">5×</div><div class="lbl">Views-to-subs viral threshold</div></div>
+    </div>
+  </div>
+
+  <!-- Step by step -->
+  <div class="section">
+    <div class="section-label">How it works - step by step</div>
+    <div class="flow">
+
+      <div class="step">
+        <div class="step-line"><div class="step-dot" style="background:var(--accent-dim);color:var(--accent);">1</div><div class="step-connector"></div></div>
+        <div class="step-body">
+          <div class="step-title">Manual trigger</div>
+          <div class="step-desc">Run on demand whenever you want fresh inspiration. No schedule - you control when research happens.</div>
+          <span class="step-tag badge badge-blue">Manual Trigger</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line"><div class="step-dot" style="background:var(--red-dim);color:var(--red);">2</div><div class="step-connector"></div></div>
+        <div class="step-body">
+          <div class="step-title">YouTube Shorts search</div>
+          <div class="step-desc">Queries the YouTube Data API v3 for "Minecraft #shorts" filtered to the past 7 days, sorted by view count, pulling up to 500 results across 10 paginated pages. Only short-duration videos are returned.</div>
+          <span class="step-tag badge badge-red">YouTube API</span>
+          <span class="step-tag badge badge-blue">HTTP Request + Pagination</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line"><div class="step-dot" style="background:var(--amber-dim);color:var(--amber);">3</div><div class="step-connector"></div></div>
+        <div class="step-body">
+          <div class="step-title">Split & enrich each video</div>
+          <div class="step-desc">Results are split into individual items. For each video, two parallel API calls fetch detailed data: one for the video's own stats (view count, title, likes), and another for the channel's subscriber count. Both streams are then merged back together.</div>
+          <span class="step-tag badge badge-red">Video Stats API</span>
+          <span class="step-tag badge badge-red">Channel Stats API</span>
+          <span class="step-tag badge badge-blue">Merge Node</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line"><div class="step-dot" style="background:var(--purple-dim);color:var(--purple);">4</div><div class="step-connector"></div></div>
+        <div class="step-body">
+          <div class="step-title">Deduplication</div>
+          <div class="step-desc">Duplicate videos are removed by comparing the clean video URL. Pagination across 10 pages can surface the same video more than once - this ensures every video is processed exactly once.</div>
+          <span class="step-tag badge badge-purple">Remove Duplicates Node</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line"><div class="step-dot" style="background:var(--amber-dim);color:var(--amber);">5</div><div class="step-connector"></div></div>
+        <div class="step-body">
+          <div class="step-title">Viral filter - the algorithm gate</div>
+          <div class="step-desc">A two-condition IF node filters for true breakout content. Both conditions must be true simultaneously. See the viral filter section below for the full logic.</div>
+          <span class="step-tag badge badge-amber">IF Node</span>
+          <span class="step-tag badge badge-green">Viral Detection</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line"><div class="step-dot" style="background:var(--purple-dim);color:var(--purple);">6</div><div class="step-connector"></div></div>
+        <div class="step-body">
+          <div class="step-title">AI Content Strategist</div>
+          <div class="step-desc">Each viral video is passed to an AI agent (Claude Sonnet 4.5 primary, Gemini fallback) that analyzes why the video blew up and writes a full solo-filmable 50-second Minecraft Short script with hook analysis and a loop-back ending.</div>
+          <span class="step-tag badge badge-purple">Claude Sonnet 4.5</span>
+          <span class="step-tag badge badge-purple">Google Gemini (fallback)</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line"><div class="step-dot" style="background:var(--teal-dim);color:var(--teal);">7</div><div class="step-connector"></div></div>
+        <div class="step-body">
+          <div class="step-title">JSON cleanup + ID matching</div>
+          <div class="step-desc">A robust 3-tier parser handles the AI's JSON output, then a merge node joins the AI-generated script back to the original video data using a tracking ID - ensuring every script is matched to the correct video even when processed in parallel.</div>
+          <span class="step-tag badge badge-purple">n8n Code Node</span>
+          <span class="step-tag badge badge-blue">Merge by Field</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line"><div class="step-dot" style="background:var(--green-dim);color:var(--green);">8</div></div>
+        <div class="step-body">
+          <div class="step-title">Google Sheets - content library</div>
+          <div class="step-desc">Results are appended or updated in a Google Sheet using the video URL as the unique key. The sheet becomes a living content research library: video title, view count, link, and the full AI script and strategy side by side.</div>
+          <span class="step-tag badge badge-green">Google Sheets</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Viral filter -->
+  <div class="section">
+    <div class="section-label">The viral filter - how breakout videos are detected</div>
+    <div class="filter-box">
+      <h3>⚡ Both conditions must be true to pass</h3>
+      <div class="filter-rule">
+        <div class="icon">📉</div>
+        <div>
+          <div class="rule-title">Condition 1 - Small channel only</div>
+          <div class="rule-desc">The channel must have <strong style="color:var(--text);">10,000 subscribers or fewer.</strong> This filters out established creators and surfaces only small channels - the ones that can teach you how to beat the algorithm without a built-in audience.<br><br><span class="formula">channel.subscriberCount ≤ 10,000</span></div>
+        </div>
+      </div>
+      <div class="filter-rule">
+        <div class="icon">🚀</div>
+        <div>
+          <div class="rule-title">Condition 2 - Views massively outpaced subscribers</div>
+          <div class="rule-desc">The video's view count must be <strong style="color:var(--text);">more than 5× the channel's total subscriber count.</strong> A channel with 1,000 subscribers getting 10,000 views is a breakout. This ratio is the core signal.<br><br><span class="formula">video.viewCount &gt; channel.subscriberCount × 5</span></div>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top: 14px; font-size: 13px;">This filter is the heart of the workflow. It doesn't just find popular videos - it finds <em>disproportionately</em> popular videos from small creators, which are far more instructive for growth than videos from channels that are already famous.</p>
+  </div>
+
+  <!-- AI constraints -->
+  <div class="section">
+    <div class="section-label">AI prompt design - creator constraints</div>
+    <div class="constraints">
+      <div class="constraint-card">
+        <div class="constraint-label" style="color:var(--red);">🚫 Hard constraint</div>
+        <div class="constraint-title">Solo creator mode</div>
+        <div class="constraint-desc">The AI is explicitly told: no scripts requiring other human players or actors. If the original video involved a prank or multiplayer concept, the AI must adapt it to work with Mobs (Villagers, Zombies), Armor Stands, or Mods.</div>
+      </div>
+      <div class="constraint-card">
+        <div class="constraint-label" style="color:var(--teal);">🌍 Language handling</div>
+        <div class="constraint-title">Non-English titles</div>
+        <div class="constraint-desc">The AI translates foreign-language video titles internally for context analysis, then writes all output in English. Minecraft is a global platform - this ensures no viral video is missed due to language.</div>
+      </div>
+      <div class="constraint-card">
+        <div class="constraint-label" style="color:var(--purple);">🎯 Tracking ID system</div>
+        <div class="constraint-title">ID matching architecture</div>
+        <div class="constraint-desc">Each video is assigned a tracking ID (its URL) before being sent to the AI. The AI must echo this ID back in its JSON output. This allows the merge node to correctly reunite scripts with their source videos even under parallel processing.</div>
+      </div>
+      <div class="constraint-card">
+        <div class="constraint-label" style="color:var(--amber);">🎬 Script structure</div>
+        <div class="constraint-title">50-second Short format</div>
+        <div class="constraint-desc">Every script is structured as: Visual Hook → Story/Action → Loop (a closing line that connects back to the opening). The loop design is intentional - it increases rewatch rate, a key signal in YouTube's Short algorithm.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI script output -->
+  <div class="section">
+    <div class="section-label">AI output - what gets generated per video</div>
+    <div class="script-parts">
+      <div class="script-part">
+        <div class="script-part-num" style="background:var(--accent-dim);color:var(--accent);">1</div>
+        <div>
+          <div class="script-part-title">Small Channel Hook Analysis</div>
+          <div class="script-part-desc">Explains exactly how this video grabbed attention without a large audience - identifying the specific visual, emotional, or narrative trigger that made it shareable from zero.</div>
+        </div>
+      </div>
+      <div class="script-part">
+        <div class="script-part-num" style="background:var(--purple-dim);color:var(--purple);">2</div>
+        <div>
+          <div class="script-part-title">Full 50-second script</div>
+          <div class="script-part-desc">A complete, filmable script adapted from the viral concept with a unique twist. Includes production notes calling out any Mods or specific Mob AI behaviors needed to execute the concept solo.</div>
+        </div>
+      </div>
+      <div class="script-part">
+        <div class="script-part-num" style="background:var(--green-dim);color:var(--green);">3</div>
+        <div>
+          <div class="script-part-title">Loop-back ending</div>
+          <div class="script-part-desc">A closing sentence designed to connect back to the opening of the video, encouraging viewers to rewatch - boosting the completion and loop metrics YouTube's algorithm rewards.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Google Sheets output -->
+  <div class="section">
+    <div class="section-label">Google Sheets output columns</div>
+    <div class="output-grid">
+      <div class="output-field"><div class="field-name">Video Title</div><div class="field-desc">Title of the scraped viral Short</div></div>
+      <div class="output-field"><div class="field-name">Views</div><div class="field-desc">Total view count at time of scrape</div></div>
+      <div class="output-field"><div class="field-name">Video Link</div><div class="field-desc">Direct YouTube URL (also the unique key for deduplication)</div></div>
+      <div class="output-field"><div class="field-name">AI Script & Strategy</div><div class="field-desc">Full hook analysis + solo-filmable script in one field</div></div>
+    </div>
+  </div>
+
+  <!-- Error handling -->
+  <div class="section">
+    <div class="section-label">3-tier JSON parser - robust AI output handling</div>
+    <p>AI models don't always return clean JSON. The cleanup code node uses three layers of fallback to ensure no script is lost:</p>
+    <div class="tiers">
+      <div class="tier">
+        <div class="tier-num" style="background:var(--green-dim);color:var(--green);">Tier 1</div>
+        <div>
+          <div class="tier-title">Standard JSON.parse</div>
+          <div class="tier-desc">Strips markdown code fences, escapes control characters, extracts the JSON object between the first <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;font-size:11px;">{</code> and last <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;font-size:11px;">}</code>, then parses normally.</div>
+        </div>
+      </div>
+      <div class="tier">
+        <div class="tier-num" style="background:var(--amber-dim);color:var(--amber);">Tier 2</div>
+        <div>
+          <div class="tier-title">Regex extraction</div>
+          <div class="tier-desc">If standard parsing fails, regex patterns individually extract the <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;font-size:11px;">matching_id</code> and <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;font-size:11px;">script_content</code> fields directly from the raw text string.</div>
+        </div>
+      </div>
+      <div class="tier">
+        <div class="tier-num" style="background:var(--red-dim);color:var(--red);">Tier 3</div>
+        <div>
+          <div class="tier-title">Graceful failure</div>
+          <div class="tier-desc">If both methods fail, the record is flagged with <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;font-size:11px;">FATAL_ERROR</code> and the error message is captured - no silent failures, no lost data.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tech stack -->
+  <div class="section">
+    <div class="section-label">Tech stack</div>
+    <div class="stack-list">
+      <div class="stack-item"><div class="stack-icon" style="background:var(--accent-dim);">⚡</div><div><span class="stack-name">n8n</span><span class="stack-role">Automation platform</span></div></div>
+      <div class="stack-item"><div class="stack-icon" style="background:var(--red-dim);">▶️</div><div><span class="stack-name">YouTube Data API v3</span><span class="stack-role">Video + channel data</span></div></div>
+      <div class="stack-item"><div class="stack-icon" style="background:var(--purple-dim);">🤖</div><div><span class="stack-name">Claude Sonnet 4.5</span><span class="stack-role">Primary AI strategist</span></div></div>
+      <div class="stack-item"><div class="stack-icon" style="background:var(--teal-dim);">🌐</div><div><span class="stack-name">Google Gemini</span><span class="stack-role">Fallback AI model</span></div></div>
+      <div class="stack-item"><div class="stack-icon" style="background:var(--green-dim);">📊</div><div><span class="stack-name">Google Sheets</span><span class="stack-role">Content research library</span></div></div>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    <span>Minecraft Shorts Scraper · n8n Workflow Documentation</span>
+    <span>Built by Travis M. Johnson</span>
+  </div>
+
+</div>
+</body>
+</html>
+

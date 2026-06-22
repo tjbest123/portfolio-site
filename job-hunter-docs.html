@@ -1,0 +1,643 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Job Hunter - n8n Workflow Documentation</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #050505;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: rgba(0,255,65,0.2);
+    --border2: rgba(0,255,65,0.4);
+    --text: #e0e0e0;
+    --muted: #888888;
+    --accent: #00ff41;
+    --accent-dim: rgba(79,142,247,0.12);
+    --green: #3ecf8e;
+    --green-dim: rgba(62,207,142,0.12);
+    --amber: #f5a623;
+    --amber-dim: rgba(245,166,35,0.12);
+    --red: #f06565;
+    --red-dim: rgba(240,101,101,0.12);
+    --purple: #a78bfa;
+    --purple-dim: rgba(167,139,250,0.12);
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 0 0 80px;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 32px 36px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    margin-bottom: 24px;
+  }
+  .back-link:hover { color: var(--accent); }
+  .badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .badge {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 99px;
+    border: 1px solid;
+  }
+  .badge-blue  { background: var(--accent-dim);  color: var(--accent);  border-color: rgba(79,142,247,0.3); }
+  .badge-green { background: var(--green-dim);   color: var(--green);   border-color: rgba(62,207,142,0.3); }
+  .badge-amber { background: var(--amber-dim);   color: var(--amber);   border-color: rgba(245,166,35,0.3); }
+  .badge-purple{ background: var(--purple-dim);  color: var(--purple);  border-color: rgba(167,139,250,0.3); }
+  .badge-red   { background: var(--red-dim);     color: var(--red);     border-color: rgba(240,101,101,0.3); }
+
+  h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; }
+  .subtitle { color: var(--muted); font-size: 15px; max-width: 560px; }
+
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .meta-item label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); display: block; margin-bottom: 3px; }
+  .meta-item span  { font-size: 14px; font-weight: 500; }
+
+  /* ── Layout ── */
+  .content {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* ── Sections ── */
+  .section {
+    padding: 40px 0 0;
+  }
+  .section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  h2 { font-size: 20px; font-weight: 600; margin-bottom: 12px; }
+  p  { color: #b0b5c8; margin-bottom: 14px; }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── Summary cards ── */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-top: 4px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 16px;
+  }
+  .stat-card .val { font-size: 26px; font-weight: 700; color: var(--accent); }
+  .stat-card .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* ── Flow steps ── */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 4px;
+  }
+  .step {
+    display: flex;
+    gap: 16px;
+    position: relative;
+  }
+  .step-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 36px;
+  }
+  .step-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+    z-index: 1;
+  }
+  .step-connector {
+    width: 1px;
+    flex: 1;
+    min-height: 20px;
+    background: var(--border2);
+    margin: 4px 0;
+  }
+  .step:last-child .step-connector { display: none; }
+  .step-body {
+    padding-bottom: 28px;
+    flex: 1;
+  }
+  .step-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    padding-top: 6px;
+  }
+  .step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .step-tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    margin-top: 8px;
+    margin-right: 4px;
+  }
+
+  /* ── Search queries table ── */
+  .query-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 4px;
+    font-size: 13px;
+  }
+  .query-table th {
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .query-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    color: #b0b5c8;
+  }
+  .query-table tr:last-child td { border-bottom: none; }
+  .query-table tr:hover td { background: var(--surface2); }
+  .pill-sm {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 99px;
+  }
+
+  /* ── Scoring rubric ── */
+  .rubric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 4px;
+  }
+  .rubric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+  .rubric-pts {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .rubric-title { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .rubric-desc  { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* ── Output fields ── */
+  .output-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .output-field {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+  .output-field .field-name {
+    font-weight: 600;
+    color: var(--green);
+    margin-bottom: 3px;
+    font-size: 12px;
+  }
+  .output-field .field-desc { color: var(--muted); font-size: 12px; }
+
+  /* ── Code block ── */
+  .code-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    font-family: 'Fira Mono', 'Courier New', monospace;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: #c8cfe8;
+    overflow-x: auto;
+    margin-top: 4px;
+  }
+  .code-block .k { color: var(--purple); }
+  .code-block .s { color: var(--green); }
+  .code-block .n { color: var(--accent); }
+  .code-block .c { color: var(--muted); font-style: italic; }
+
+  /* ── Kill switch ── */
+  .kill-list {
+    background: var(--red-dim);
+    border: 1px solid rgba(240,101,101,0.25);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-top: 4px;
+  }
+  .kill-list li {
+    list-style: none;
+    color: #e8a0a0;
+    font-size: 13px;
+    padding: 4px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .kill-list li::before { content: '✕'; color: var(--red); font-size: 12px; margin-top: 2px; flex-shrink: 0; }
+
+  /* ── Tech stack ── */
+  .stack-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .stack-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .stack-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .stack-name { font-weight: 600; display: block; }
+  .stack-role { font-size: 11px; color: var(--muted); display: block; }
+
+  /* ── Footer ── */
+  .doc-footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  @media (max-width: 600px) {
+    .header, .content { padding-left: 16px; padding-right: 16px; }
+    h1 { font-size: 22px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .meta-row { gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="index.html" class="back-link">← Back to portfolio</a>
+  <div class="badge-row">
+    <span class="badge badge-blue">n8n Automation</span>
+    <span class="badge badge-purple">AI-Powered</span>
+    <span class="badge badge-green">Google Sheets</span>
+    <span class="badge badge-amber">SerpApi</span>
+  </div>
+  <h1>Job Hunter</h1>
+  <p class="subtitle">An automated AI job-scraping pipeline that searches Google Jobs weekly, evaluates every listing against a custom resume scoring rubric using Claude AI, and logs results to Google Sheets.</p>
+  <div class="meta-row">
+    <div class="meta-item"><label>Platform</label><span>n8n</span></div>
+    <div class="meta-item"><label>Trigger</label><span>Weekly (Fridays, 10 PM)</span></div>
+    <div class="meta-item"><label>AI Model</label><span>Claude Sonnet 4.5</span></div>
+    <div class="meta-item"><label>Search Queries</label><span>9 categories</span></div>
+    <div class="meta-item"><label>Output</label><span>Google Sheets</span></div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- Overview -->
+  <div class="section">
+    <div class="section-label">Overview</div>
+    <div class="stats">
+      <div class="stat-card"><div class="val">9</div><div class="lbl">Search categories</div></div>
+      <div class="stat-card"><div class="val">30</div><div class="lbl">Max pages scraped</div></div>
+      <div class="stat-card"><div class="val">100</div><div class="lbl">Point fit score</div></div>
+      <div class="stat-card"><div class="val">75+</div><div class="lbl">Score to flag job</div></div>
+    </div>
+  </div>
+
+  <!-- Problem this solves -->
+  <div class="section">
+    <div class="section-label">Problem it solves</div>
+    <h2>Job searching is manual, slow, and inconsistent</h2>
+    <p>Most job seekers spend hours every week searching multiple job boards, reading postings one by one, and guessing whether a role is a good fit. Important listings go unnoticed. Old postings waste time. There's no systematic way to prioritize where to apply first.</p>
+    <p>Job Hunter solves this by fully automating the search, evaluation, and logging process - running every Friday night so a curated, AI-scored shortlist is ready first thing Saturday morning.</p>
+  </div>
+
+  <!-- How it works -->
+  <div class="section">
+    <div class="section-label">How it works - step by step</div>
+    <div class="flow">
+
+      <div class="step">
+        <div class="step-line">
+          <div class="step-dot" style="background:var(--accent-dim);color:var(--accent);">1</div>
+          <div class="step-connector"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Schedule Trigger</div>
+          <div class="step-desc">The workflow fires automatically every Friday at 10:00 PM. No manual action needed - it runs in the background while you sleep.</div>
+          <span class="step-tag badge badge-blue">n8n Schedule</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line">
+          <div class="step-dot" style="background:var(--purple-dim);color:var(--purple);">2</div>
+          <div class="step-connector"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Master Search Config</div>
+          <div class="step-desc">A configuration node defines 9 job search queries across different categories - from Construction APM to Real Estate PM to Finance PM - each with a set number of pages to scrape. This is the control center of the workflow.</div>
+          <span class="step-tag badge badge-purple">n8n Code Node</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line">
+          <div class="step-dot" style="background:var(--amber-dim);color:var(--amber);">3</div>
+          <div class="step-connector"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Google Jobs Scraper (SerpApi)</div>
+          <div class="step-desc">For each search query, an HTTP request node calls the SerpApi Google Jobs engine with automatic pagination - pulling up to 30 total pages of live job listings from Google's job index.</div>
+          <span class="step-tag badge badge-amber">SerpApi</span>
+          <span class="step-tag badge badge-blue">HTTP Request</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line">
+          <div class="step-dot" style="background:var(--green-dim);color:var(--green);">4</div>
+          <div class="step-connector"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Job Posting Cleanup</div>
+          <div class="step-desc">Raw API results are normalized into clean, structured records: title, company name, location, salary, full description, apply link, search category, and a unique ID to prevent duplicates.</div>
+          <span class="step-tag badge badge-purple">n8n Code Node</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line">
+          <div class="step-dot" style="background:var(--purple-dim);color:var(--purple);">5</div>
+          <div class="step-connector"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title">AI Technical Recruiter (Claude Sonnet 4.5)</div>
+          <div class="step-desc">Each job is passed to a Claude AI agent acting as an expert technical recruiter. The agent reads the full job description, compares it against a detailed resume, and scores the role across 4 dimensions using a custom 100-point rubric. It also generates a tailored application strategy for each job.</div>
+          <span class="step-tag badge badge-purple">Claude Sonnet 4.5</span>
+          <span class="step-tag badge badge-blue">LangChain Agent</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line">
+          <div class="step-dot" style="background:var(--amber-dim);color:var(--amber);">6</div>
+          <div class="step-connector"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Score Parsing + Freshness Filter</div>
+          <div class="step-desc">A code node parses the AI's JSON output and applies a 7-day freshness gate - any listing posted more than a week ago is automatically scored 0, preventing time wasted on stale postings.</div>
+          <span class="step-tag badge badge-purple">n8n Code Node</span>
+          <span class="step-tag badge badge-red">Freshness Gate</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line">
+          <div class="step-dot" style="background:var(--accent-dim);color:var(--accent);">7</div>
+          <div class="step-connector"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Score Threshold Split</div>
+          <div class="step-desc">An IF node routes jobs based on fit score. Jobs scoring above 75 are flagged as high-priority. All jobs - regardless of score - are logged to Google Sheets for full visibility.</div>
+          <span class="step-tag badge badge-blue">n8n IF Node</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line">
+          <div class="step-dot" style="background:var(--green-dim);color:var(--green);">8</div>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Google Sheets Log</div>
+          <div class="step-desc">Every job is appended to a Google Sheet with full details: date found, title, company, location, fit score, AI reasoning, application strategy, apply link, and status set to "New" for easy follow-up tracking.</div>
+          <span class="step-tag badge badge-green">Google Sheets</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Search queries -->
+  <div class="section">
+    <div class="section-label">Search queries configured</div>
+    <table class="query-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Search query</th>
+          <th>Pages</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>IT Assistant Project Manager New York</td><td><span class="pill-sm">2</span></td></tr>
+        <tr><td>2</td><td>Construction Project Manager New York</td><td><span class="pill-sm">5</span></td></tr>
+        <tr><td>3</td><td>Assistant Project Manager New York</td><td><span class="pill-sm">4</span></td></tr>
+        <tr><td>4</td><td>Project Coordinator New York</td><td><span class="pill-sm">3</span></td></tr>
+        <tr><td>5</td><td>Project Manager New York</td><td><span class="pill-sm">3</span></td></tr>
+        <tr><td>6</td><td>Construction APM New York</td><td><span class="pill-sm">4</span></td></tr>
+        <tr><td>7</td><td>Construction Project Coordinator New York</td><td><span class="pill-sm">2</span></td></tr>
+        <tr><td>8</td><td>Real Estate Project Manager New York</td><td><span class="pill-sm">5</span></td></tr>
+        <tr><td>9</td><td>Finance Project Manager New York</td><td><span class="pill-sm">2</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Scoring rubric -->
+  <div class="section">
+    <div class="section-label">AI scoring rubric (0-100 points)</div>
+    <div class="rubric-grid">
+      <div class="rubric-card">
+        <div class="rubric-pts" style="color:var(--accent);">40 pts</div>
+        <div class="rubric-title">Title &amp; industry alignment</div>
+        <div class="rubric-desc">Full points for APM, Project Coordinator, or Operations roles in Real Estate, Construction, or Development. Partial for Finance Ops. Zero for Director/VP roles requiring 7+ years.</div>
+      </div>
+      <div class="rubric-card">
+        <div class="rubric-pts" style="color:var(--purple);">30 pts</div>
+        <div class="rubric-title">Automation potential</div>
+        <div class="rubric-desc">Awarded for roles mentioning manual reporting, material tracking, vendor coordination, or logistics management - tasks historically improved with technical systems.</div>
+      </div>
+      <div class="rubric-card">
+        <div class="rubric-pts" style="color:var(--green);">20 pts</div>
+        <div class="rubric-title">Tool synergy</div>
+        <div class="rubric-desc">Bonus points if the role requires Procore, Yardi, Argus, or advanced Excel financial modeling - matching existing certifications and skills.</div>
+      </div>
+      <div class="rubric-card">
+        <div class="rubric-pts" style="color:var(--amber);">10 pts</div>
+        <div class="rubric-title">Graduation fit</div>
+        <div class="rubric-desc">Prioritizes roles that value a recent B.B.A. graduate with strong hands-on internship experience over candidates requiring multiple years of full-time experience.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kill switch -->
+  <div class="section">
+    <div class="section-label">Automatic disqualifiers (score forced to 0)</div>
+    <ul class="kill-list">
+      <li>Pure software engineering roles with no operations component</li>
+      <li>Roles requiring specialized licenses (P.E. license, Architecture license, etc.)</li>
+      <li>Strictly administrative roles with no project management responsibilities</li>
+      <li>Job postings older than 7 days (freshness filter)</li>
+    </ul>
+  </div>
+
+  <!-- AI output format -->
+  <div class="section">
+    <div class="section-label">AI output per job</div>
+    <div class="output-grid">
+      <div class="output-field">
+        <div class="field-name">fit_score</div>
+        <div class="field-desc">Numeric score from 0-100 based on the rubric above</div>
+      </div>
+      <div class="output-field">
+        <div class="field-name">reasoning</div>
+        <div class="field-desc">One sentence linking a job duty to specific resume experience</div>
+      </div>
+      <div class="output-field">
+        <div class="field-name">strategy</div>
+        <div class="field-desc">A tailored pitch or automation idea to use in the application</div>
+      </div>
+      <div class="output-field">
+        <div class="field-name">priority_flag</div>
+        <div class="field-desc">Boolean - true if fit score exceeds 85. Surfaces top-tier roles instantly</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Example JSON output -->
+  <div class="section">
+    <div class="section-label">Example AI output (JSON)</div>
+    <div class="code-block">
+<span class="c">// Claude AI response for a high-scoring role</span>
+{
+  <span class="k">"fit_score"</span>: <span class="n">88</span>,
+  <span class="k">"reasoning"</span>: <span class="s">"Role requires vendor RFP analysis and budget tracking -
+    directly mirrors Brooklyn Navy Yard APM experience."</span>,
+  <span class="k">"strategy"</span>: <span class="s">"Offer to build an n8n agent that automates Procore
+    submittal log tracking and sends weekly status emails."</span>,
+  <span class="k">"priority_flag"</span>: <span class="n">true</span>
+}
+    </div>
+  </div>
+
+  <!-- Tech stack -->
+  <div class="section">
+    <div class="section-label">Tech stack</div>
+    <div class="stack-list">
+      <div class="stack-item">
+        <div class="stack-icon" style="background:var(--accent-dim);">⚡</div>
+        <div><span class="stack-name">n8n</span><span class="stack-role">Automation platform</span></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon" style="background:var(--purple-dim);">🤖</div>
+        <div><span class="stack-name">Claude Sonnet 4.5</span><span class="stack-role">AI job evaluator</span></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon" style="background:var(--amber-dim);">🔍</div>
+        <div><span class="stack-name">SerpApi</span><span class="stack-role">Google Jobs scraping</span></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon" style="background:var(--green-dim);">📊</div>
+        <div><span class="stack-name">Google Sheets</span><span class="stack-role">Output &amp; tracking</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    <span>Job Hunter · n8n Workflow Documentation</span>
+    <span>Built by [Enter Name Here]</span>
+  </div>
+
+</div>
+</body>
+</html>
+

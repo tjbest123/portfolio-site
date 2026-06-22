@@ -1,0 +1,552 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>News Generator - n8n Workflow Documentation</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #050505;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: rgba(0,255,65,0.2);
+    --border2: rgba(0,255,65,0.4);
+    --text: #e0e0e0;
+    --muted: #888888;
+    --accent: #00ff41;
+    --accent-dim: rgba(79,142,247,0.12);
+    --green: #3ecf8e;
+    --green-dim: rgba(62,207,142,0.12);
+    --amber: #f5a623;
+    --amber-dim: rgba(245,166,35,0.12);
+    --red: #f06565;
+    --red-dim: rgba(240,101,101,0.12);
+    --purple: #a78bfa;
+    --purple-dim: rgba(167,139,250,0.12);
+    --teal: #2dd4bf;
+    --teal-dim: rgba(45,212,191,0.12);
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 0 0 80px;
+  }
+
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 32px 36px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--muted); text-decoration: none; margin-bottom: 24px;
+  }
+  .back-link:hover { color: var(--accent); }
+  .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .badge {
+    font-size: 12px; font-weight: 500; padding: 3px 10px;
+    border-radius: 99px; border: 1px solid;
+  }
+  .badge-blue   { background: var(--accent-dim);  color: var(--accent);  border-color: rgba(79,142,247,0.3); }
+  .badge-green  { background: var(--green-dim);   color: var(--green);   border-color: rgba(62,207,142,0.3); }
+  .badge-amber  { background: var(--amber-dim);   color: var(--amber);   border-color: rgba(245,166,35,0.3); }
+  .badge-purple { background: var(--purple-dim);  color: var(--purple);  border-color: rgba(167,139,250,0.3); }
+  .badge-teal   { background: var(--teal-dim);    color: var(--teal);    border-color: rgba(45,212,191,0.3); }
+  .badge-red    { background: var(--red-dim);     color: var(--red);     border-color: rgba(240,101,101,0.3); }
+
+  h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; }
+  .subtitle { color: var(--muted); font-size: 15px; max-width: 580px; }
+
+  .meta-row {
+    display: flex; flex-wrap: wrap; gap: 24px;
+    margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border);
+  }
+  .meta-item label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); display: block; margin-bottom: 3px; }
+  .meta-item span  { font-size: 14px; font-weight: 500; }
+
+  .content { max-width: 860px; margin: 0 auto; padding: 0 32px; }
+
+  .section { padding: 40px 0 0; }
+  .section-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--muted); margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  h2 { font-size: 20px; font-weight: 600; margin-bottom: 12px; }
+  p  { color: #b0b5c8; margin-bottom: 14px; }
+  p:last-child { margin-bottom: 0; }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px; margin-top: 4px;
+  }
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 18px 16px;
+  }
+  .stat-card .val { font-size: 26px; font-weight: 700; color: var(--accent); }
+  .stat-card .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* Pipeline phases */
+  .phases {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px; margin-top: 4px;
+  }
+  .phase-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px;
+  }
+  .phase-num { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
+  .phase-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .phase-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* Step flow */
+  .flow { display: flex; flex-direction: column; margin-top: 4px; }
+  .step { display: flex; gap: 16px; position: relative; }
+  .step-line { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 36px; }
+  .step-dot {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; flex-shrink: 0; z-index: 1;
+  }
+  .step-connector { width: 1px; flex: 1; min-height: 20px; background: var(--border2); margin: 4px 0; }
+  .step:last-child .step-connector { display: none; }
+  .step-body { padding-bottom: 28px; flex: 1; }
+  .step-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; padding-top: 6px; }
+  .step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .step-tag {
+    display: inline-block; font-size: 11px;
+    padding: 2px 8px; border-radius: 99px; margin-top: 8px; margin-right: 4px;
+  }
+
+  /* Sources grid */
+  .sources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px; margin-top: 4px;
+  }
+  .source-group {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px 16px;
+  }
+  .source-group-title {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.07em; margin-bottom: 10px;
+  }
+  .source-item {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; padding: 4px 0;
+    border-bottom: 1px solid var(--border); color: #b0b5c8;
+  }
+  .source-item:last-child { border-bottom: none; }
+  .lean-badge {
+    font-size: 10px; padding: 1px 6px; border-radius: 99px; font-weight: 500;
+  }
+  .lean-left  { background: rgba(79,142,247,0.15); color: #7ab3f7; }
+  .lean-right { background: rgba(240,101,101,0.15); color: #f09595; }
+  .lean-center{ background: rgba(62,207,142,0.15); color: #3ecf8e; }
+
+  /* AI dual model */
+  .ai-pair {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px;
+  }
+  .ai-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px;
+  }
+  .ai-role { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 6px; }
+  .ai-name { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .ai-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* Output chain */
+  .chain {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 0; margin-top: 4px;
+  }
+  .chain-item {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 10px 14px; font-size: 12px;
+  }
+  .chain-item .ci-label { color: var(--muted); font-size: 11px; margin-bottom: 2px; }
+  .chain-item .ci-val   { font-weight: 600; }
+  .chain-arrow { color: var(--muted); font-size: 16px; padding: 0 6px; }
+
+  /* Code block */
+  .code-block {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 18px 20px;
+    font-family: 'Fira Mono', 'Courier New', monospace;
+    font-size: 12.5px; line-height: 1.7; color: #c8cfe8;
+    overflow-x: auto; margin-top: 4px;
+  }
+  .code-block .c { color: var(--muted); font-style: italic; }
+  .code-block .k { color: var(--purple); }
+  .code-block .s { color: var(--green); }
+
+  /* Tech stack */
+  .stack-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+  .stack-item {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 10px 14px;
+    font-size: 13px; display: flex; align-items: center; gap: 8px;
+  }
+  .stack-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+  .stack-name { font-weight: 600; display: block; }
+  .stack-role { font-size: 11px; color: var(--muted); display: block; }
+
+  /* Bias callout */
+  .callout {
+    border-radius: var(--radius); padding: 18px 20px; margin-top: 4px;
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .callout-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+  .callout-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .callout-desc { font-size: 13px; line-height: 1.5; }
+
+  .doc-footer {
+    margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--border);
+    font-size: 12px; color: var(--muted);
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+  }
+
+  @media (max-width: 600px) {
+    .header, .content { padding-left: 16px; padding-right: 16px; }
+    h1 { font-size: 22px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .ai-pair { grid-template-columns: 1fr; }
+    .chain { flex-direction: column; }
+    .chain-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="index.html" class="back-link">← Back to portfolio</a>
+  <div class="badge-row">
+    <span class="badge badge-teal">n8n Automation</span>
+    <span class="badge badge-purple">Multi-AI</span>
+    <span class="badge badge-amber">RSS Aggregation</span>
+    <span class="badge badge-red">Video Production</span>
+    <span class="badge badge-green">YouTube Upload</span>
+  </div>
+  <h1>News Generator</h1>
+  <p class="subtitle">A fully automated daily news broadcast pipeline that aggregates RSS feeds from 24 sources across the political spectrum, uses AI to write a 1,600+ word script, converts it to speech, renders an MP4 video, and uploads it to YouTube - every morning at 8:45 AM.</p>
+  <div class="meta-row">
+    <div class="meta-item"><label>Platform</label><span>n8n</span></div>
+    <div class="meta-item"><label>Trigger</label><span>Daily at 8:45 AM</span></div>
+    <div class="meta-item"><label>News sources</label><span>24 outlets</span></div>
+    <div class="meta-item"><label>AI models</label><span>Gemini + Claude + OpenAI</span></div>
+    <div class="meta-item"><label>Output</label><span>YouTube (unlisted MP4)</span></div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- Overview stats -->
+  <div class="section">
+    <div class="section-label">Overview</div>
+    <div class="stats">
+      <div class="stat-card"><div class="val">24</div><div class="lbl">News sources</div></div>
+      <div class="stat-card"><div class="val">5</div><div class="lbl">News categories</div></div>
+      <div class="stat-card"><div class="val">1,600+</div><div class="lbl">Word script target</div></div>
+      <div class="stat-card"><div class="val">3</div><div class="lbl">AI models used</div></div>
+      <div class="stat-card"><div class="val">MP4</div><div class="lbl">Final output format</div></div>
+    </div>
+  </div>
+
+  <!-- Problem -->
+  <div class="section">
+    <div class="section-label">Problem it solves</div>
+    <h2>Most news is filtered through a single political lens</h2>
+    <p>Traditional news consumption means choosing a channel - and inheriting its bias. Watching only CNN or only Fox News gives you the same day's events framed entirely from one perspective. Checking multiple outlets manually takes too much time.</p>
+    <p>News Generator solves this by pulling from both left-leaning and right-leaning outlets simultaneously, letting an AI synthesize the reporting into a single balanced broadcast - delivered as a ready-to-watch video every morning before you start your day.</p>
+
+    <div class="callout" style="background: var(--teal-dim); border: 1px solid rgba(45,212,191,0.2); margin-top: 16px;">
+      <div class="callout-icon">⚖️</div>
+      <div>
+        <div class="callout-title" style="color: var(--teal);">Built-in political balance</div>
+        <div class="callout-desc" style="color: #a0d8d0;">The source list deliberately pairs opposing outlets: CNN alongside Fox News, NY Times alongside NY Post, ABC News alongside The Daily Wire. The AI anchor synthesizes all perspectives - not just one.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pipeline phases -->
+  <div class="section">
+    <div class="section-label">Pipeline at a glance</div>
+    <div class="phases">
+      <div class="phase-card">
+        <div class="phase-num" style="color: var(--accent);">Phase 1</div>
+        <div class="phase-title">Collection</div>
+        <div class="phase-desc">Fetches RSS feeds from 24 outlets across 5 categories. Top 15 headlines extracted per source.</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num" style="color: var(--purple);">Phase 2</div>
+        <div class="phase-title">AI curation</div>
+        <div class="phase-desc">AI selects the top 5 stories per outlet with a 3-paragraph summary of each, filtered by category rules.</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num" style="color: var(--green);">Phase 3</div>
+        <div class="phase-title">Script writing</div>
+        <div class="phase-desc">A second AI agent writes a 1,600+ word broadcast script with an intro, deep dives, NYC local segment, and sign-off.</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num" style="color: var(--amber);">Phase 4</div>
+        <div class="phase-title">Audio & video</div>
+        <div class="phase-desc">OpenAI TTS converts the script to speech. FFmpeg stitches audio to a static background image to produce an MP4.</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num" style="color: var(--teal);">Phase 5</div>
+        <div class="phase-title">YouTube upload</div>
+        <div class="phase-desc">The finished video is auto-uploaded to YouTube as unlisted with an AI-generated title and formatted description.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step by step -->
+  <div class="section">
+    <div class="section-label">Step-by-step flow</div>
+    <div class="flow">
+
+      <div class="step">
+        <div class="step-line"><div class="step-dot" style="background:var(--accent-dim);color:var(--accent);">1</div><div class="step-connector"></div></div>
+        <div class="step-body">
+          <div class="step-title">Schedule Trigger</div>
+          <div class="step-desc">Fires every day at 8:45 AM automatically. The entire pipeline runs without any manual action.</div>
+          <span class="step-tag badge badge-blue">n8n Schedule</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line"><div class="step-dot" style="background:var(--amber-dim);color:var(--amber);">2</div><div class="step-connector"></div></div>
+        <div class="step-body">
+          <div class="step-title">Background image prep</div>
+          <div class="step-desc">Downloads the branded news background image and saves it to the server's temp folder at <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;font-size:11px;">/tmp/background.jpg</code>. Old temp files from the previous run are cleared.</div>
+          <span class="step-tag badge badge-amber">HTTP Request</span>
+          <span class="step-tag badge badge-blue">File Write</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line"><div class="step-dot" style="background:var(--purple-dim);color:var(--purple);">3</div><div class="step-connector"></div></div>
+        <div class="step-body">
+          <div class="step-title">RSS source config</div>
+          <div class="step-desc">A code node defines all 24 news sources with their category tags and Google News RSS URLs, each scoped to articles from the last 24 hours only.</div>
+          <span class="step-tag badge badge-purple">n8n Code Node</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line"><div class="step-dot" style="background:var(--accent-dim);color:var(--accent);">4</div><div class="step-connector"></div></div>
+        <div class="step-body">
+          <div class="step-title">Loop: fetch one source at a time</div>
+          <div class="step-desc">A loop node processes each source individually - reading its RSS feed, waiting between requests to avoid rate limits, then formatting the top 15 headlines with titles and links.</div>
+          <span class="step-tag badge badge-blue">n8n Loop</span>
+          <span class="step-tag badge badge-blue">RSS Reader</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line"><div class="step-dot" style="background:var(--purple-dim);color:var(--purple);">5</div><div class="step-connector"></div></div>
+        <div class="step-body">
+          <div class="step-title">AI story selection - top 5 per source</div>
+          <div class="step-desc">An AI agent (Google Gemini, Claude fallback) reads the 15 headlines per outlet and selects the 5 most newsworthy stories based on strict category rules. Each selected story gets a 3-paragraph TLDR summary.</div>
+          <span class="step-tag badge badge-purple">Google Gemini</span>
+          <span class="step-tag badge badge-purple">Claude Sonnet 4.5 (fallback)</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line"><div class="step-dot" style="background:var(--teal-dim);color:var(--teal);">6</div><div class="step-connector"></div></div>
+        <div class="step-body">
+          <div class="step-title">Story organizer</div>
+          <div class="step-desc">All curated stories from across every source are grouped by category (National, International, Finance, Tech, Politics, Local) into a single data object ready for the script writer.</div>
+          <span class="step-tag badge badge-teal">n8n Code Node</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line"><div class="step-dot" style="background:var(--green-dim);color:var(--green);">7</div><div class="step-connector"></div></div>
+        <div class="step-body">
+          <div class="step-title">AI script generator - "News" anchor</div>
+          <div class="step-desc">A second AI agent receives all categorized stories and writes a full broadcast script - 1,600+ words - in the voice of a professional news anchor. Output includes the broadcast script, a YouTube video title, and a formatted video description with source citations. Each broadcast opens and closes with a unique, non-repeated line.</div>
+          <span class="step-tag badge badge-purple">Google Gemini</span>
+          <span class="step-tag badge badge-purple">Claude Sonnet 4.5 (fallback)</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line"><div class="step-dot" style="background:var(--amber-dim);color:var(--amber);">8</div><div class="step-connector"></div></div>
+        <div class="step-body">
+          <div class="step-title">Text chunker</div>
+          <div class="step-desc">The script is split into 4,000-character chunks at natural word boundaries. This ensures compatibility with TTS API limits without cutting words mid-sentence.</div>
+          <span class="step-tag badge badge-purple">n8n Code Node</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line"><div class="step-dot" style="background:var(--accent-dim);color:var(--accent);">9</div><div class="step-connector"></div></div>
+        <div class="step-body">
+          <div class="step-title">Text-to-speech (OpenAI TTS, "echo" voice)</div>
+          <div class="step-desc">Each text chunk is converted to an MP3 audio file using OpenAI's TTS API with the "echo" voice - a deep, authoritative broadcast voice. Each part is saved as <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;font-size:11px;">/tmp/audio_part_N.mp3</code>.</div>
+          <span class="step-tag badge badge-blue">OpenAI TTS</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line"><div class="step-dot" style="background:var(--red-dim);color:var(--red);">10</div><div class="step-connector"></div></div>
+        <div class="step-body">
+          <div class="step-title">FFmpeg video assembly</div>
+          <div class="step-desc">A bash command runs FFmpeg directly on the server to stitch all MP3 parts into one audio file, then render the final MP4 by combining the background image with the full audio track. Pixel dimensions are auto-corrected to even numbers for YouTube compatibility.</div>
+          <span class="step-tag badge badge-red">FFmpeg</span>
+          <span class="step-tag badge badge-blue">Bash</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line"><div class="step-dot" style="background:var(--green-dim);color:var(--green);">11</div></div>
+        <div class="step-body">
+          <div class="step-title">YouTube upload (unlisted)</div>
+          <div class="step-desc">The finished MP4 is uploaded to YouTube as an unlisted video in the News &amp; Politics category, with the AI-generated title and description automatically applied. The description includes all source citations and an AI disclaimer.</div>
+          <span class="step-tag badge badge-green">YouTube API</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- News sources -->
+  <div class="section">
+    <div class="section-label">News sources (24 outlets, both sides of the aisle)</div>
+    <div class="sources-grid">
+      <div class="source-group">
+        <div class="source-group-title" style="color:var(--accent);">🇺🇸 National</div>
+        <div class="source-item"><span>ABC News</span><span class="lean-badge lean-left">Left-center</span></div>
+        <div class="source-item"><span>CNN</span><span class="lean-badge lean-left">Left</span></div>
+        <div class="source-item"><span>Fox News</span><span class="lean-badge lean-right">Right</span></div>
+        <div class="source-item"><span>The Daily Wire</span><span class="lean-badge lean-right">Right</span></div>
+      </div>
+      <div class="source-group">
+        <div class="source-group-title" style="color:var(--teal);">🌍 International</div>
+        <div class="source-item"><span>Reuters</span><span class="lean-badge lean-center">Center</span></div>
+        <div class="source-item"><span>BBC</span><span class="lean-badge lean-center">Center</span></div>
+        <div class="source-item"><span>AP News</span><span class="lean-badge lean-center">Center</span></div>
+        <div class="source-item"><span>Al Jazeera</span><span class="lean-badge lean-left">Left-center</span></div>
+      </div>
+      <div class="source-group">
+        <div class="source-group-title" style="color:var(--green);">💵 Finance</div>
+        <div class="source-item"><span>Bloomberg</span><span class="lean-badge lean-center">Center</span></div>
+        <div class="source-item"><span>CNBC</span><span class="lean-badge lean-center">Center</span></div>
+        <div class="source-item"><span>Nasdaq</span><span class="lean-badge lean-center">Center</span></div>
+        <div class="source-item"><span>Forbes</span><span class="lean-badge lean-center">Center</span></div>
+      </div>
+      <div class="source-group">
+        <div class="source-group-title" style="color:var(--purple);">💻 Tech</div>
+        <div class="source-item"><span>The Verge</span><span class="lean-badge lean-left">Left-center</span></div>
+        <div class="source-item"><span>TechCrunch</span><span class="lean-badge lean-center">Center</span></div>
+        <div class="source-item"><span>Ars Technica</span><span class="lean-badge lean-center">Center</span></div>
+        <div class="source-item"><span>CNET</span><span class="lean-badge lean-center">Center</span></div>
+      </div>
+      <div class="source-group">
+        <div class="source-group-title" style="color:var(--amber);">🏛️ Politics</div>
+        <div class="source-item"><span>C-SPAN</span><span class="lean-badge lean-center">Center</span></div>
+        <div class="source-item"><span>Politico</span><span class="lean-badge lean-center">Center</span></div>
+        <div class="source-item"><span>The Hill</span><span class="lean-badge lean-center">Center</span></div>
+        <div class="source-item"><span>Axios</span><span class="lean-badge lean-center">Center</span></div>
+      </div>
+      <div class="source-group">
+        <div class="source-group-title" style="color:var(--red);">🗽 Local (NYC)</div>
+        <div class="source-item"><span>Gothamist</span><span class="lean-badge lean-left">Left</span></div>
+        <div class="source-item"><span>The City</span><span class="lean-badge lean-center">Center</span></div>
+        <div class="source-item"><span>NY Times</span><span class="lean-badge lean-left">Left-center</span></div>
+        <div class="source-item"><span>NY Post</span><span class="lean-badge lean-right">Right</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI models -->
+  <div class="section">
+    <div class="section-label">AI model setup - dual model with fallback</div>
+    <div class="ai-pair">
+      <div class="ai-card" style="border-color: rgba(45,212,191,0.3);">
+        <div class="ai-role" style="color:var(--teal);">Primary model</div>
+        <div class="ai-name">Google Gemini</div>
+        <div class="ai-desc">Used for both story selection and script generation. Handles the heavy lifting of reading dozens of headlines and writing a long-form broadcast.</div>
+      </div>
+      <div class="ai-card" style="border-color: rgba(167,139,250,0.3);">
+        <div class="ai-role" style="color:var(--purple);">Fallback model</div>
+        <div class="ai-name">Claude Sonnet 4.5</div>
+        <div class="ai-desc">Automatically takes over if Gemini fails or hits a rate limit. Both nodes are pre-wired to retry up to 5 times with a 5-second delay between attempts.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Output chain -->
+  <div class="section">
+    <div class="section-label">Output production chain</div>
+    <div class="chain">
+      <div class="chain-item"><div class="ci-label">Script</div><div class="ci-val">1,600+ words</div></div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-item"><div class="ci-label">Split into</div><div class="ci-val">4,000-char chunks</div></div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-item"><div class="ci-label">TTS voice</div><div class="ci-val">OpenAI "echo"</div></div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-item"><div class="ci-label">Audio stitched by</div><div class="ci-val">FFmpeg</div></div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-item"><div class="ci-label">Video rendered</div><div class="ci-val">MP4 (H.264 + AAC)</div></div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-item"><div class="ci-label">Uploaded</div><div class="ci-val">YouTube (unlisted)</div></div>
+    </div>
+  </div>
+
+  <!-- FFmpeg command -->
+  <div class="section">
+    <div class="section-label">Video rendering command (FFmpeg)</div>
+    <div class="code-block"><span class="c"># Stitch all audio parts into one file</span>
+ffmpeg -f concat -safe 0 -i /tmp/list.txt -c copy /tmp/full_audio.mp3
+
+<span class="c"># Render final video: static image + audio → MP4</span>
+<span class="c"># scale filter forces even pixel dimensions for H.264 compatibility</span>
+ffmpeg -loop 1 -i /tmp/background.jpg \
+       -i /tmp/full_audio.mp3 \
+       -vf <span class="s">"scale=trunc(iw/2)*2:trunc(ih/2)*2"</span> \
+       -c:v libx264 -tune stillimage \
+       -c:a aac -b:a 192k \
+       -pix_fmt yuv420p \
+       -shortest /tmp/final_video.mp4</div>
+  </div>
+
+  <!-- Tech stack -->
+  <div class="section">
+    <div class="section-label">Tech stack</div>
+    <div class="stack-list">
+      <div class="stack-item"><div class="stack-icon" style="background:var(--accent-dim);">⚡</div><div><span class="stack-name">n8n</span><span class="stack-role">Automation platform</span></div></div>
+      <div class="stack-item"><div class="stack-icon" style="background:var(--teal-dim);">🌐</div><div><span class="stack-name">Google Gemini</span><span class="stack-role">Primary AI model</span></div></div>
+      <div class="stack-item"><div class="stack-icon" style="background:var(--purple-dim);">🤖</div><div><span class="stack-name">Claude Sonnet 4.5</span><span class="stack-role">Fallback AI model</span></div></div>
+      <div class="stack-item"><div class="stack-icon" style="background:var(--green-dim);">🔊</div><div><span class="stack-name">OpenAI TTS</span><span class="stack-role">Text-to-speech ("echo")</span></div></div>
+      <div class="stack-item"><div class="stack-icon" style="background:var(--red-dim);">🎬</div><div><span class="stack-name">FFmpeg</span><span class="stack-role">Audio + video rendering</span></div></div>
+      <div class="stack-item"><div class="stack-icon" style="background:var(--amber-dim);">📡</div><div><span class="stack-name">RSS / Google News</span><span class="stack-role">News ingestion</span></div></div>
+      <div class="stack-item"><div class="stack-icon" style="background:var(--red-dim);">▶️</div><div><span class="stack-name">YouTube API</span><span class="stack-role">Video publishing</span></div></div>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    <span>News Generator · n8n Workflow Documentation</span>
+    <span>Built by Travis M. Johnson</span>
+  </div>
+
+</div>
+</body>
+</html>
+

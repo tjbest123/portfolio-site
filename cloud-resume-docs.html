@@ -1,0 +1,144 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AWS Cloud Portfolio Architecture - Documentation</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #050505; --surface: #111111; --surface2: #1a1a1a;
+    --border: rgba(0,255,65,0.2); --border2: rgba(0,255,65,0.4);
+    --text: #e0e0e0; --muted: #888888; --accent: #00ff41;
+    --accent-dim: rgba(79,142,247,0.12);
+    --orange: #ff9900; --orange-dim: rgba(255,153,0,0.12);
+    --blue: #232f3e; --blue-dim: rgba(35,47,62,0.12);
+    --radius: 10px; --radius-sm: 6px;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.7; padding: 0 0 80px; }
+  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 48px 32px 36px; max-width: 860px; margin: 0 auto; }
+  .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); text-decoration: none; margin-bottom: 24px; }
+  .back-link:hover { color: var(--accent); }
+  .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .badge { font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 99px; border: 1px solid; }
+  .badge-orange { background: var(--orange-dim); color: var(--orange); border-color: rgba(255,153,0,0.3); }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
+  .subtitle { color: var(--muted); font-size: 15px; max-width: 560px; }
+  .meta-row { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border); }
+  .meta-item label { font-size: 11px; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 3px; }
+  .meta-item span { font-size: 14px; font-weight: 500; }
+  .content { max-width: 860px; margin: 0 auto; padding: 0 32px; }
+  .section { padding: 40px 0 0; }
+  .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  h2 { font-size: 20px; font-weight: 600; margin-bottom: 12px; }
+  p { color: #b0b5c8; margin-bottom: 14px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 4px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 16px; }
+  .stat-card .val { font-size: 26px; font-weight: 700; color: var(--orange); }
+  .stat-card .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .flow { display: flex; flex-direction: column; gap: 0; margin-top: 4px; }
+  .step { display: flex; gap: 16px; position: relative; }
+  .step-line { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 36px; }
+  .step-dot { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; z-index: 1; background: var(--orange-dim); color: var(--orange); }
+  .step-connector { width: 1px; flex: 1; min-height: 20px; background: var(--border2); margin: 4px 0; }
+  .step:last-child .step-connector { display: none; }
+  .step-body { padding-bottom: 28px; flex: 1; }
+  .step-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; padding-top: 6px; }
+  .step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .stack-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+  .stack-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+  .stack-name { font-weight: 600; display: block; color: var(--orange); }
+  .stack-role { font-size: 11px; color: var(--muted); display: block; }
+  .doc-footer { margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="index.html" class="back-link">← Back to portfolio</a>
+  <div class="badge-row">
+    <span class="badge badge-orange">AWS Architecture</span>
+    <span class="badge badge-orange">Serverless</span>
+    <span class="badge badge-orange">CDN Edge</span>
+  </div>
+  <h1>Serverless AWS Portfolio Architecture</h1>
+  <p class="subtitle">A highly available, fault-tolerant static website hosted entirely on AWS serverless infrastructure, utilizing edge caching for global low-latency delivery.</p>
+  <div class="meta-row">
+    <div class="meta-item"><label>Provider</label><span>Amazon Web Services</span></div>
+    <div class="meta-item"><label>Domain</label><span>tjbest.dev</span></div>
+    <div class="meta-item"><label>Security</label><span>TLS 1.2+ Enforced</span></div>
+    <div class="meta-item"><label>Cost</label><span>~.50/month</span></div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="section">
+    <div class="section-label">Overview</div>
+    <div class="stats">
+      <div class="stat-card"><div class="val">4</div><div class="lbl">Core AWS Services</div></div>
+      <div class="stat-card"><div class="val">400+</div><div class="lbl">Global Edge Locations</div></div>
+      <div class="stat-card"><div class="val">&lt;50ms</div><div class="lbl">Average Global Latency</div></div>
+      <div class="stat-card"><div class="val">99.9%</div><div class="lbl">Uptime SLA</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Problem it solves</div>
+    <h2>Traditional web hosting is slow, fragile, and unscalable</h2>
+    <p>Hosting a website on a single server (like an EC2 instance or a traditional shared host) creates a single point of failure. If that server goes down, the website goes down. Furthermore, users on the other side of the world experience significant latency because data has to physically travel across oceans.</p>
+    <p>This architecture solves that by completely decoupling the storage (S3) from the delivery (CloudFront). The website is cached at hundreds of edge locations globally, meaning a user in Tokyo downloads the site from a Tokyo server, while a user in New York downloads it from New York. It is instantly scalable, highly secure, and extremely cost-efficient.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Architecture Data Flow</div>
+    <div class="flow">
+      <div class="step">
+        <div class="step-line"><div class="step-dot">1</div><div class="step-connector"></div></div>
+        <div class="step-body">
+          <div class="step-title">DNS Resolution (Amazon Route 53)</div>
+          <div class="step-desc">When a user types <code>tjbest.dev</code>, Route 53 acts as the highly available DNS service. An Alias (A) record instantly routes the user's request to the nearest CloudFront edge location.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-line"><div class="step-dot">2</div><div class="step-connector"></div></div>
+        <div class="step-body">
+          <div class="step-title">Edge Delivery (Amazon CloudFront)</div>
+          <div class="step-desc">CloudFront receives the request. If the website assets (HTML, CSS, JS, images) are already cached at this local edge node, it serves them instantly (&lt;50ms). If not, it requests them from the S3 origin. CloudFront is also configured to forcefully redirect all HTTP traffic to secure HTTPS.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-line"><div class="step-dot">3</div><div class="step-connector"></div></div>
+        <div class="step-body">
+          <div class="step-title">SSL/TLS Security (AWS Certificate Manager)</div>
+          <div class="step-desc">ACM provides the public SSL certificate that validates the identity of the website and encrypts all transit data. The certificate is attached directly to the CloudFront distribution and covers both the root domain and wildcard subdomains.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-line"><div class="step-dot">4</div></div>
+        <div class="step-body">
+          <div class="step-title">Origin Storage (Amazon S3)</div>
+          <div class="step-desc">An S3 bucket serves as the highly durable (11 9s) origin storage for the raw code files. It is configured for static website hosting, but bucket policies can be tightened to only allow access from the CloudFront distribution (OAC) to prevent direct public access bypass.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Tech stack</div>
+    <div class="stack-list">
+      <div class="stack-item"><div><span class="stack-name">Amazon S3</span><span class="stack-role">Origin Storage</span></div></div>
+      <div class="stack-item"><div><span class="stack-name">Amazon CloudFront</span><span class="stack-role">Global CDN</span></div></div>
+      <div class="stack-item"><div><span class="stack-name">AWS Route 53</span><span class="stack-role">DNS Management</span></div></div>
+      <div class="stack-item"><div><span class="stack-name">AWS ACM</span><span class="stack-role">SSL/TLS Encryption</span></div></div>
+      <div class="stack-item"><div><span class="stack-name">HTML / Vanilla JS / CSS</span><span class="stack-role">Frontend Code</span></div></div>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    <span>Serverless AWS Portfolio · Documentation</span>
+    <span>Architected by Travis M. Johnson</span>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travis Johnson | Cloud Engineer</title>
+    <meta name="description" content="Explore my professional portfolio showcasing AWS infrastructure, serverless automations, and cloud architecture projects.">
+    
+    <!-- Open Graph / Discord / LinkedIn / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tjbest.dev/">
+    <meta property="og:title" content="Travis Johnson | Cloud Engineer">
+    <meta property="og:description" content="Explore my professional portfolio showcasing AWS infrastructure, serverless automations, and cloud architecture projects.">
+    <meta property="og:image" content="https://tjbest.dev/profile.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://tjbest.dev/">
+    <meta property="twitter:title" content="Travis Johnson | Cloud Engineer">
+    <meta property="twitter:description" content="Explore my professional portfolio showcasing AWS infrastructure, serverless automations, and cloud architecture projects.">
+    <meta property="twitter:image" content="https://tjbest.dev/profile.png">
+    <!-- Google Fonts: Matrix aesthetic fits well with monospace and sleek sans-serif -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600&family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <canvas class="matrix-bg" id="matrix-canvas"></canvas>
+    <header>
+        <nav class="navbar">
+            <div class="logo"><a href="#" style="color: inherit; text-decoration: none;">&lt;TJ/&gt;</a></div>
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#resume">Experience</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li style="display: flex; gap: 15px; align-items: center; margin-left: 15px;">
+                    <a href="https://linkedin.com/in/travisjohnson5261" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center;"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/linkedin/linkedin-original.svg" alt="LinkedIn" style="width: 20px; height: 20px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></a>
+                    <a href="https://github.com/tjbest123" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center;"><img src="https://cdn.simpleicons.org/github/e0e0e0" alt="GitHub" style="width: 20px; height: 20px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span></span><span></span><span></span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- HERO / ABOUT SECTION -->
+        <section id="about" class="hero section-padding">
+            <div class="container hero-content">
+                <div class="hero-text">
+                    <p class="greeting">print("Hello, World")</p>
+                    <h1 class="glitch" data-text="I'm an Aspiring Cloud Engineer.">I'm an Aspiring Cloud Engineer.</h1>
+                    <h2 class="subtitle">Automating infrastructure. Building workflows.</h2>
+                    <p class="bio" id="bio-text">Loading bio...</p>
+                    <div class="hero-cta">
+                        <a href="#projects" class="btn btn-primary">View Projects</a>
+                        <a href="Travis_Johnson_Resume.pdf" class="btn btn-secondary" download>Download Resume</a>
+                        <a href="#contact" class="btn btn-secondary">Contact Me</a>
+                    </div>
+                </div>
+                <div class="hero-right-col" style="display: flex; flex-direction: column; gap: 30px; align-items: center;">
+                    <div class="hero-image-wrapper">
+                        <img src="profile.png" alt="Profile" class="profile-pic default-pic">
+                        <img src="pets.jpg" alt="My Pets" class="profile-pic hover-pic">
+                        <div class="glow-box"></div>
+                    </div>
+                    
+                    <!-- Terminal Learning Status -->
+                    <div class="terminal-container" style="width: 350px; background: #050505; border: 1px solid #333; border-radius: 8px; overflow: hidden; text-align: left; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
+                        <div class="terminal-header" style="background: #111; padding: 10px 15px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #333;">
+                            <span style="width: 10px; height: 10px; border-radius: 50%; background: #ff5f56;"></span>
+                            <span style="width: 10px; height: 10px; border-radius: 50%; background: #ffbd2e;"></span>
+                            <span style="width: 10px; height: 10px; border-radius: 50%; background: #27c93f;"></span>
+                            <span style="margin-left: 10px; color: #888; font-family: var(--font-mono); font-size: 0.75rem;">travis@cloud: ~</span>
+                        </div>
+                        <div class="terminal-body" style="padding: 20px; font-family: var(--font-mono); color: var(--accent-color); font-size: 0.85rem; line-height: 1.5; min-height: 130px;">
+                            <span style="color: #fff;">$</span> ./status --current<br>
+                            <span style="color: #888;">> Running...</span><br>
+                            <span style="color: #fff;">></span> <span id="typewriter-text"></span><span class="cursor">_</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CAPABILITY MATRIX & CREDENTIALS SECTION -->
+        <section id="skills" class="capabilities section-padding">
+            <div class="container">
+                <div class="matrix-layout">
+                    <!-- Left: Skills -->
+                    <div class="matrix-left">
+                        <h2 class="section-title">Technical <span class="highlight">Arsenal</span></h2>
+                        <div class="skills-pills-container" id="skills-grid">
+                            <!-- Skills will be injected here via JS -->
+                        </div>
+                    </div>
+                    
+                    <!-- Right: Certifications -->
+                    <div class="matrix-right">
+                        <h2 class="section-title">Verified <span class="highlight">Credentials</span></h2>
+                        <div class="cert-container">
+                            <a href="https://www.credly.com/badges/7eee6134-7a42-4b65-b372-8a027e236f3e/linked_in_profile" target="_blank" rel="noopener noreferrer" class="credential-plaque">
+                                <div class="plaque-glow"></div>
+                                <div class="plaque-content">
+                                    <div class="cert-icon">
+                                        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg" alt="AWS" style="height: 50px; max-width: 100%; object-fit: contain;">
+                                    </div>
+                                    <div class="cert-info">
+                                        <h3 class="cert-title">AWS Certified Cloud Practitioner</h3>
+                                        <p class="cert-code">CLF-C02</p>
+                                        <span class="cert-verify">Verify Badge ↗</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROJECTS SECTION -->
+        <section id="projects" class="projects section-padding">
+            <div class="container">
+                <h2 class="section-title">Featured <span class="highlight">Deployments</span></h2>
+                <div class="project-filters">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="cloud">Cloud Infra</button>
+                    <button class="filter-btn" data-filter="n8n">n8n Automation</button>
+                </div>
+                <div class="projects-grid" id="projects-grid">
+                    <!-- Projects injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- RESUME / EXPERIENCE SECTION -->
+        <section id="resume" class="resume section-padding">
+            <div class="container">
+                <h2 class="section-title">Execution <span class="highlight">Log</span></h2>
+                <div class="timeline" id="timeline">
+                    <!-- Experience injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT SECTION -->
+        <section id="contact" class="contact section-padding">
+            <div class="container">
+                <h2 class="section-title">Initiate <span class="highlight">Connection</span></h2>
+                <div class="contact-wrapper">
+                    <div class="contact-info">
+                        <h3>Let's talk architecture.</h3>
+                        <p>Currently open for new opportunities or interesting projects.</p>
+                        <div class="social-links">
+                            <!-- Link placeholders -->
+                            <a href="#" target="_blank" rel="noopener noreferrer" class="social-btn email-btn" id="link-email"><img src="https://cdn.simpleicons.org/gmail" alt="Email" style="width: 20px; height: 20px;"> Email</a>
+                            <a href="#" target="_blank" rel="noopener noreferrer" class="social-btn linkedin-btn" id="link-linkedin"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/linkedin/linkedin-original.svg" alt="LinkedIn" style="width: 20px; height: 20px;"> LinkedIn</a>
+                            <a href="#" target="_blank" rel="noopener noreferrer" class="social-btn github-btn" id="link-github"><img src="https://cdn.simpleicons.org/github/e0e0e0" alt="GitHub" style="width: 20px; height: 20px;"> GitHub</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Formspree Setup -->
+                    <form action="https://formspree.io/f/xzdqyzjg" method="POST" class="contact-form">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" required placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required placeholder="john@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5" required placeholder="How can I help?"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary submit-btn">Transmit Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; <span id="year"></span> Travis M. Johnson. All systems operational.</p>
+        </div>
+    </footer>
+
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
